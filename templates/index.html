@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Draven UI</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    #chat-log {
+      border: 1px solid #ccc;
+      padding: 10px;
+      height: 300px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      background-color: #f9f9f9;
+    }
+    .mensaje { margin: 5px 0; }
+    .usuario { font-weight: bold; color: #333; }
+    .draven { font-weight: bold; color: #0053a0; }
+  </style>
+</head>
+<body>
+  <h1>Habla con Draven</h1>
+
+  <div id="chat-log"></div>
+
+  <form id="chat-form">
+    <input type="text" id="message" placeholder="Escribe tu mensaje..." required />
+    <button type="submit">Enviar</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('chat-form');
+    const input = document.getElementById('message');
+    const log = document.getElementById('chat-log');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const mensaje = input.value.trim();
+      if (!mensaje) return;
+
+      log.innerHTML += `<div class="mensaje"><span class="usuario">🧑‍🚀 Tú:</span> ${mensaje}</div>`;
+      log.scrollTop = log.scrollHeight;
+      input.value = "";
+
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: mensaje })
+      });
+
+      const data = await res.json();
+      log.innerHTML += `<div class="mensaje"><span class="draven">🧠 Draven:</span> ${data.response}</div>`;
+      log.scrollTop = log.scrollHeight;
+    });
+  </script>
+</body>
+</html>
+
